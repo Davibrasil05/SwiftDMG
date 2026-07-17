@@ -10,9 +10,22 @@
 		981623D53009A4D10084ADD5 /* SwiftDMG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftDMG.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		981623E43009A5270084ADD5 /* Exceptions for "SwiftDMG" folder in "SwiftDMG" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				SwiftDMGCore,
+			);
+			target = 981623D43009A4D10084ADD5 /* SwiftDMG */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		981623D73009A4D10084ADD5 /* SwiftDMG */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				981623E43009A5270084ADD5 /* Exceptions for "SwiftDMG" folder in "SwiftDMG" target */,
+			);
 			path = SwiftDMG;
 			sourceTree = "<group>";
 		};
