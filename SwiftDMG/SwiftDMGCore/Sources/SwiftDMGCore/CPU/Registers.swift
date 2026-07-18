@@ -51,7 +51,7 @@ public struct Registers {
     public var halfCarryFlag: Bool {
         get { return (f & 0b0010_0000) != 0}
         set {
-            if newValue { f |= 0b0001_0000 }
+            if newValue { f |= 0b0010_0000 }
             else { f &= 0b1101_1111}
         }
     }
