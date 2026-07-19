@@ -8,7 +8,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "821033C5-C253-401C-95DB-F64A1D687863"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SwiftDMG/SwiftDMGCore/Sources/SwiftDMGCore/Memory/MemoryBus.swift"

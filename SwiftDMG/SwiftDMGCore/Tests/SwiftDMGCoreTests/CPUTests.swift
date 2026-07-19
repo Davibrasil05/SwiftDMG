@@ -35,4 +35,24 @@ final class CPUTests: XCTestCase {
         // Como o PC leu 2 bytes (no C000 e no C001), ele deve estar apontando para o C002 agora
         XCTAssertEqual(cpu.registers.pc, 0xC002, "O PC deveria ter avançado 2 posições")
     }
+    
+    func testBlargg01Special() throws {
+        guard let url = Bundle.module.url(forResource:"01-special", withExtension: "gb") else {
+            XCTFail("Não foi achado a rom")
+            return
+        }
+        
+        let data = try Data(contentsOf: url)
+        let romArray = [UInt8](data)
+        
+        bus.load(cartdrigeData: romArray)
+        
+        cpu.registers.pc = 0x0100
+        
+        for _ in 0...50000000{
+            _ = cpu.step()
+        }
+    }
+    
+    
 }

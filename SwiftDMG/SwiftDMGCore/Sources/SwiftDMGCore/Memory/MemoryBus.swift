@@ -86,7 +86,10 @@ public class MemoryBus: Addressable{
             //Echo ram, não utilizável
             wram[Int(address - 0xE000)] = value
             
-            
+        case 0xFF01:
+            // Interceptando a escrita do Cabo Link!
+            let character = Character(UnicodeScalar(value))
+            print(character, terminator: "")
         case 0xFE00...0xFE9F:
             // OAM (Sprites)
             
