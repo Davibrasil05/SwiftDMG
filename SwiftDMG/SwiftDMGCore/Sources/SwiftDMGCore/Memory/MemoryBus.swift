@@ -14,13 +14,15 @@ public class MemoryBus: Addressable{
     
     private var interruptEnable: UInt8 = 0
     
+    private var rom = [UInt8](repeating: 0, count: 32768)
+    
     public init(){}
     
     public func read(address: UInt16) -> UInt8 {
         switch address {
         case 0x0000...0x7FFF:
             //rom do cartucho
-            return 0xFF
+            return rom[Int(address)]
             
         case 0x8000...0x9FFF:
             //Vram
@@ -84,7 +86,10 @@ public class MemoryBus: Addressable{
             //Echo ram, não utilizável
             wram[Int(address - 0xE000)] = value
             
-            
+        case 0xFF01:
+            // Interceptando a escrita do Cabo Link!
+            let character = Character(UnicodeScalar(value))
+            print(character, terminator: "")
         case 0xFE00...0xFE9F:
             // OAM (Sprites)
             
@@ -114,5 +119,13 @@ public class MemoryBus: Addressable{
         
         
         
+    }
+    
+    public func load(cartdrigeData: [UInt8]){
+        for(index, byte) in cartdrigeData.enumerated() {
+            if index < rom.count {
+                rom[index] = byte
+            }
+        }
     }
 }
