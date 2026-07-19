@@ -17,6 +17,39 @@ public class CPU {
         reset()
     }
     
+    public func step() -> Int{
+        let opcode = fetch()
+        
+        let cycles = execute(opcode: opcode)
+        
+        return cycles
+    }
+    
+    private func fetch() -> UInt8 {
+        let byte = bus.read(address: registers.pc)
+        registers.pc &+= 1 //operador overflow
+        return byte
+    }
+    
+    private func execute(opcode: UInt8) -> Int {
+        switch opcode {
+        case 0x00:
+            return 1
+            
+        case 0xAF:
+            registers.a ^= registers.a
+            
+            registers.zeroFlag = (registers.a == 0)
+            registers.subtractFlag = false
+            registers.halfCarryFlag = false
+            registers.carryFlag = false
+            
+            return 1
+            
+        default:
+            fatalError("Opcode \(String(format: "0x%02X", opcode)) não implementado ainda!")
+        }
+    }
     private func reset() {
         // Os valores padrão do emulador ao iniciar o jogo
         registers.af = 0x01B0

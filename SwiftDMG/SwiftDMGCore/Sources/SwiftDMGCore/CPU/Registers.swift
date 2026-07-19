@@ -65,34 +65,34 @@ public struct Registers {
     }
     
     public var af: UInt16 {
-            get { return (UInt16(a) << 8) | UInt16(f) }
-            set {
-                a = UInt8(newValue >> 8)
-                f = UInt8(truncatingIfNeeded: newValue) & 0xF0
-            }
+        get { return (UInt16(a) << 8) | UInt16(f) }
+        set {
+            a = UInt8(newValue >> 8)
+            f = UInt8(truncatingIfNeeded: newValue) & 0xF0
         }
-        
-        public var bc: UInt16 {
-            get { return (UInt16(b) << 8) | UInt16(c) }
-            set {
-                b = UInt8(newValue >> 8)
-                c = UInt8(truncatingIfNeeded: newValue)
-            }
+    }
+    
+    public var bc: UInt16 {
+        get { return (UInt16(b) << 8) | UInt16(c) }
+        set {
+            b = UInt8(newValue >> 8)
+            c = UInt8(truncatingIfNeeded: newValue)
         }
-        
-        public var de: UInt16 {
-            get { return (UInt16(d) << 8) | UInt16(e) }
-            set {
-                d = UInt8(newValue >> 8)
-                e = UInt8(truncatingIfNeeded: newValue)
-            }
+    }
+    
+    public var de: UInt16 {
+        get { return (UInt16(d) << 8) | UInt16(e) }
+        set {
+            d = UInt8(newValue >> 8)
+            e = UInt8(truncatingIfNeeded: newValue)
         }
-        
-        public var hl: UInt16 {
-            get { return (UInt16(h) << 8) | UInt16(l) }
-            set {
-                h = UInt8(newValue >> 8)
-                l = UInt8(truncatingIfNeeded: newValue)
-            }
+    }
+    
+    public var hl: UInt16 {
+        get { return (UInt16(h) << 8) | UInt16(l) }
+        set {
+            h = UInt8(newValue >> 8)
+            l = UInt8(truncatingIfNeeded: newValue)
         }
+    }
 }
