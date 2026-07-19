@@ -18,7 +18,14 @@ let package = Package(
         .target(
             name: "SwiftDMGCore"
         ),
-
+        // Adicionando o alvo (target) de Testes aqui!
+        .testTarget(
+            name: "SwiftDMGCoreTests",
+            dependencies: ["SwiftDMGCore"],
+            resources: [
+                .process("Resources")
+            ]
+        )
     ],
     swiftLanguageModes: [.v6]
 )

@@ -35,7 +35,20 @@ public class CPU {
         switch opcode {
         case 0x00:
             return 1
+        
+        case 0x2E:
+            // LD L, u8
+            let value = fetch()
+            registers.l = value
             
+            return 2
+        case 0x3E:
+            // LD A, d8
+            
+            let value = fetch()
+            registers.a = value
+            
+            return 2
         case 0xAF:
             registers.a ^= registers.a
             
