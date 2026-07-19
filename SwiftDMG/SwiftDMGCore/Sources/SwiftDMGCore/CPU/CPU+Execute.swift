@@ -85,6 +85,14 @@ extension CPU {
             registers.e = increment8bit(value: registers.e)
             return 1
             
+        case 0x1F:
+            // RRA (Rotate Right A Through Carry - Fast)
+            
+            registers.a = rotateRightThroughCarry(value: registers.a)
+            
+            registers.zeroFlag = false
+            
+            return 1
         case 0x20:
             // JR NZ, i8 (Jump Relative if Not Zero)
             return jumpRelative(condition: !registers.zeroFlag)
@@ -105,6 +113,10 @@ extension CPU {
             
             return 2
             
+        case 0x25:
+            // DEC H
+            registers.h = decrement8bit(value: registers.h)
+            return 1
         case 0x26:
             // LD H,u8
             let value = fetch()
@@ -165,6 +177,10 @@ extension CPU {
             
             return 2
             
+        case 0x30:
+            // JR NC,i8
+            return jumpRelative(condition: !registers.carryFlag)
+            
         case 0x32:
             // LD (HL-),A - 0x32
             
@@ -173,6 +189,24 @@ extension CPU {
             registers.hl &-= 1
             
             return 2
+            
+        case 0x35:
+            // DEC (HL)
+            let originalValue = bus.read(address: registers.hl)
+            
+            let newValue = decrement8bit(value: originalValue)
+            
+            
+            bus.write(address: registers.hl, value: newValue)
+            
+            
+            return 3
+            
+            
+        case 0x3D:
+            // DEC A
+            registers.a = decrement8bit(value: registers.a)
+            return 1
         case 0x3E:
             // LD A, d8
             
@@ -197,10 +231,35 @@ extension CPU {
             
         case 0x56:
             // LD D,(HL) - 0x56
+            registers.d = bus.read(address: registers.hl)
             
-            let value = bus.read(address: registers.hl)
-            registers.d = value
+            return 2
             
+        case 0x6E:
+            
+            // LD L,(HL)
+            registers.l = bus.read(address: registers.hl)
+            return 2
+            
+        case 0x6F:
+            // LD L,A
+            registers.l = registers.a
+            return 1
+            
+        case 0x70:
+            // LD (HL),B
+            bus.write(address:registers.hl, value: registers.b)
+            
+            return 2
+        case 0x71:
+            // LD (HL),C
+            
+            bus.write(address: registers.hl, value: registers.c)
+            
+            return 2
+        case 0x72:
+            // LD (HL),D
+            bus.write(address: registers.hl, value: registers.d)
             return 2
         case 0x77:
             //LD (HL), A
@@ -234,6 +293,11 @@ extension CPU {
             logicalOr(value: registers.c)
             return 1
             
+        case 0xB6:
+            // OR A,(HL)
+            let value = bus.read(address: registers.hl)
+            logicalOr(value: value)
+            return 2
         case 0xB7:
             // OR A,A
             logicalOr(value: registers.a)
@@ -261,9 +325,15 @@ extension CPU {
             add(value: value)
             return 2
             
+            
+        case 0xC8:
+            // RET Z
+            _ = returnSubroutine(condition: registers.zeroFlag)
+            return 4
         case 0xC9:
             // RET (Return da Sub-rotina)
-            return returnSubroutine()
+            _ = returnSubroutine(condition: true)
+            return 4
             
             
         case 0xCB:
@@ -275,6 +345,20 @@ extension CPU {
             // CALL a16
             return callSubroutine(condition: true)
             
+        case 0xCE:
+            // ADC A, d8 (Add with Carry puxando da memória)
+            let value = fetch()
+            addWithCarry(value: value)
+            return 2
+            
+        case 0xD0:
+            // RET NC
+            return returnSubroutine(condition: !registers.carryFlag)
+        case 0xD1:
+            // POP DE
+            registers.de = pop16()
+            
+            return 3
         case 0xD5:
             // PUSH DE
             push16(value: registers.de)
@@ -287,7 +371,7 @@ extension CPU {
             subtract(value: value)
             
             return 2
-        
+            
         case 0xE0:
             // LD (0xFF00 + u8), A)
             

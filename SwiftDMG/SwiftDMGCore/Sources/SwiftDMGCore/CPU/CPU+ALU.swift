@@ -80,6 +80,24 @@ extension CPU {
         
         registers.carryFlag = result > 0xFF
     }
+    func addWithCarry(value: UInt8) {
+            let a = registers.a
+            
+            let carryValue: UInt8 = registers.carryFlag ? 1 : 0
+            
+            let result = Int(a) + Int(value) + Int(carryValue)
+            
+            let finalA = UInt8(truncatingIfNeeded: result)
+            registers.zeroFlag = (finalA == 0)
+        
+            registers.subtractFlag = false
+            
+            registers.halfCarryFlag = (a & 0x0F) + (value & 0x0F) + carryValue > 0x0F
+            
+            registers.carryFlag = result > 0xFF
+            
+            registers.a = finalA
+        }
     func subtract(value: UInt8) {
         let a = registers.a
         

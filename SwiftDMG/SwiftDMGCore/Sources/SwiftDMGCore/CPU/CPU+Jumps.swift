@@ -35,9 +35,13 @@ extension CPU {
         }
     }
     
-    func returnSubroutine() -> Int {
-
-        registers.pc = pop16()
-        return 4
+    func returnSubroutine(condition: Bool) -> Int {
+        if condition {
+            registers.pc = pop16()
+            
+            return 5
+        } else {
+            return 2
+        }
     }
 }
