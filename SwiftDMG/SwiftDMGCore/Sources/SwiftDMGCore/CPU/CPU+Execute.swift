@@ -98,10 +98,17 @@ extension CPU {
             
         case 0x22:
             // LD (HL+), A
-       
+            
             bus.write(address: registers.hl, value: registers.a)
             
             registers.hl &+= 1
+            
+            return 2
+            
+        case 0x26:
+            // LD H,u8
+            let value = fetch()
+            registers.h = value
             
             return 2
             
@@ -146,10 +153,24 @@ extension CPU {
             // INC L - 0x2C
             registers.l = increment8bit(value: registers.l)
             return 1
+            
+        case 0x2D:
+            // DEC L
+            registers.l = decrement8bit(value: registers.l)
+            return 1
         case 0x2E:
             // LD L, u8
             let value = fetch()
             registers.l = value
+            
+            return 2
+            
+        case 0x32:
+            // LD (HL-),A - 0x32
+            
+            bus.write(address: registers.hl, value: registers.a)
+            
+            registers.hl &-= 1
             
             return 2
         case 0x3E:
@@ -160,6 +181,27 @@ extension CPU {
             
             return 2
             
+        case 0x4E:
+            // LD C,(HL)
+            
+            let value = bus.read(address: registers.hl)
+            registers.c = value
+            
+            return 2
+        case 0x46:
+            // LD B,(HL)
+            
+            let value = bus.read(address: registers.hl)
+            registers.b = value
+            return 2
+            
+        case 0x56:
+            // LD D,(HL) - 0x56
+            
+            let value = bus.read(address: registers.hl)
+            registers.d = value
+            
+            return 2
         case 0x77:
             //LD (HL), A
             bus.write(address: registers.hl, value: registers.a)
@@ -182,9 +224,19 @@ extension CPU {
             // XOR A,C
             logicalXor(value: registers.c)
             return 1
+            
+        case 0xAE:
+            // XOR A,A - 0xAF
+            logicalXor(value: registers.a)
+            return 1
         case 0xB1:
             // OR A, C
             logicalOr(value: registers.c)
+            return 1
+            
+        case 0xB7:
+            // OR A,A
+            logicalOr(value: registers.a)
             return 1
         case 0xC1:
             // POP BC
@@ -204,17 +256,38 @@ extension CPU {
             return 4
             
         case 0xC6:
-            // ADD A,u8 
-            
+            // ADD A, d8
+            let value = fetch()
+            add(value: value)
+            return 2
             
         case 0xC9:
             // RET (Return da Sub-rotina)
             return returnSubroutine()
             
+            
+        case 0xCB:
+            // PREFIX CB
+            let cbOpcode = fetch()
+            
+            return executeCB(opcode: cbOpcode)
         case 0xCD:
             // CALL a16
             return callSubroutine(condition: true)
             
+        case 0xD5:
+            // PUSH DE
+            push16(value: registers.de)
+            return 4
+            
+        case 0xD6:
+            // SUB A,u8
+            
+            let value = fetch()
+            subtract(value: value)
+            
+            return 2
+        
         case 0xE0:
             // LD (0xFF00 + u8), A)
             

@@ -68,16 +68,58 @@ extension CPU {
         let a = registers.a
         
         let result = Int(a) + Int(value)
-    
+        
         registers.a = UInt8(truncatingIfNeeded: result)
         
         registers.zeroFlag = (registers.a == 0)
         
         registers.subtractFlag = false
         
-
+        
         registers.halfCarryFlag = (a & 0x0F) + (value & 0x0F) > 0x0F
         
         registers.carryFlag = result > 0xFF
+    }
+    func subtract(value: UInt8) {
+        let a = registers.a
+        
+        registers.zeroFlag = (a == value)
+        
+        registers.subtractFlag = true
+        
+        registers.halfCarryFlag = (a & 0x0F) < (value & 0x0F)
+        
+        registers.carryFlag = (a < value)
+        
+        registers.a = a &- value
+    }
+    func shiftRightLogical(value: UInt8) -> UInt8 {
+        
+        let bitQueCaiu = (value & 0x01) == 0x01
+        
+        let newValue = value >> 1
+        
+        registers.zeroFlag = (newValue == 0)
+        registers.subtractFlag = false
+        registers.halfCarryFlag = false
+        registers.carryFlag = bitQueCaiu
+        
+        return newValue
+    }
+    func rotateRightThroughCarry(value: UInt8) -> UInt8 {
+        
+        let bitQueVaiSair = (value & 0x01) == 0x01
+        
+        let bitQueVaiEntrar: UInt8 = registers.carryFlag ? 1 : 0
+        
+        let newValue = (value >> 1) | (bitQueVaiEntrar << 7)
+        
+        registers.zeroFlag = (newValue == 0)
+        registers.subtractFlag = false
+        registers.halfCarryFlag = false
+        
+        registers.carryFlag = bitQueVaiSair
+        
+        return newValue
     }
 }
