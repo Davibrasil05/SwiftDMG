@@ -25,6 +25,11 @@ extension CPU {
             
             return 2
             
+        case 0x05:
+            // DEC B
+            registers.b = decrement8bit(value: registers.b)
+            return 1
+            
         case 0x06:
             // LD B,u8
             let value = fetch()
@@ -54,6 +59,11 @@ extension CPU {
             
             return 2
             
+        case 0x13:
+            // INC DE
+            registers.de &+= 1
+            return 2
+            
         case 0x14:
             //INC D
             registers.d = increment8bit(value: registers.d)
@@ -63,6 +73,12 @@ extension CPU {
             // JR i8
             return jumpRelative(condition: true)
             
+        case 0x1A:
+            // LD A,(DE)
+            
+            registers.a = bus.read(address: registers.de)
+            
+            return 2
         case 0x1C:
             // INC E
             
@@ -79,6 +95,15 @@ extension CPU {
             registers.hl = (highByte << 8) | lowByte
             
             return 3
+            
+        case 0x22:
+            // LD (HL+), A
+       
+            bus.write(address: registers.hl, value: registers.a)
+            
+            registers.hl &+= 1
+            
+            return 2
             
         case 0x31:
             // LD SP, u16
@@ -97,6 +122,11 @@ extension CPU {
             
             return 2
             
+        case 0x24:
+            // INC H
+            
+            registers.h = increment8bit(value: registers.h)
+            return 1
         case 0x28:
             // JR Z, i8
             return jumpRelative(condition: registers.zeroFlag)
@@ -111,6 +141,11 @@ extension CPU {
             registers.hl &+= 1
             
             return 2
+            
+        case 0x2C:
+            // INC L - 0x2C
+            registers.l = increment8bit(value: registers.l)
+            return 1
         case 0x2E:
             // LD L, u8
             let value = fetch()
@@ -125,6 +160,10 @@ extension CPU {
             
             return 2
             
+        case 0x77:
+            //LD (HL), A
+            bus.write(address: registers.hl, value: registers.a)
+            return 2
         case 0x78:
             //LD A, B
             registers.a = registers.b
@@ -139,6 +178,10 @@ extension CPU {
             registers.a = registers.l
             return 1
             
+        case 0xA9:
+            // XOR A,C
+            logicalXor(value: registers.c)
+            return 1
         case 0xB1:
             // OR A, C
             logicalOr(value: registers.c)
@@ -155,9 +198,15 @@ extension CPU {
         case 0xC4:
             // CALL NZ, a16
             return callSubroutine(condition: !registers.zeroFlag)
+            
         case 0xC5:
             push16(value: registers.bc)
             return 4
+            
+        case 0xC6:
+            // ADD A,u8 
+            
+            
         case 0xC9:
             // RET (Return da Sub-rotina)
             return returnSubroutine()
