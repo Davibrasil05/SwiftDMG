@@ -54,5 +54,43 @@ final class CPUTests: XCTestCase {
         }
     }
     
-    
+    func testBlargg03OpSpHl() throws {
+           guard let url = Bundle.module.url(forResource:"03-op sp,hl", withExtension: "gb") else {
+               XCTFail("Não foi achado a rom 03-op sp,hl")
+               return
+           }
+           let data = try Data(contentsOf: url)
+           bus.load(cartdrigeData: [UInt8](data))
+           cpu.registers.pc = 0x0100
+           
+           for _ in 0...50000000 {
+               _ = cpu.step()
+           }
+       }
+    func testBlargg04OpRImm() throws {
+            guard let url = Bundle.module.url(forResource:"04-op r,imm", withExtension: "gb") else {
+                XCTFail("Não foi achado a rom 04-op r,imm")
+                return
+            }
+            let data = try Data(contentsOf: url)
+            bus.load(cartdrigeData: [UInt8](data))
+            cpu.registers.pc = 0x0100
+            
+            for _ in 0...50000000 {
+                _ = cpu.step()
+            }
+        }
+    func testBlargg06LdRR() throws {
+            guard let url = Bundle.module.url(forResource:"06-ld r,r", withExtension: "gb") else {
+                XCTFail("Não foi achado a rom 06-ld r,r")
+                return
+            }
+            let data = try Data(contentsOf: url)
+            bus.load(cartdrigeData: [UInt8](data))
+            cpu.registers.pc = 0x0100
+            
+            for _ in 0...50000000 {
+                _ = cpu.step()
+            }
+        }
 }

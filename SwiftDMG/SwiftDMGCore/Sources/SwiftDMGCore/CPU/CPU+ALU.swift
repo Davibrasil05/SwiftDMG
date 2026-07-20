@@ -125,18 +125,21 @@ extension CPU {
         registers.a = a &- value
     }
     func subtractWithCarry(value: UInt8) {
-        let a = registers.a
-        let carryValue: UInt8 = registers.carryFlag ? 1 : 0
-        
-        let result = Int(a) - Int(value) - Int(carryValue)
-        
-        registers.zeroFlag = (UInt8(truncatingIfNeeded: result) == 0)
-        registers.subtractFlag = true
-        registers.halfCarryFlag = (a & 0x0F) - (value & 0x0F) - carryValue < 0
-        registers.carryFlag = result < 0
-        
-        registers.a = UInt8(truncatingIfNeeded: result)
-    }
+            let a = registers.a
+            let carryValue: UInt8 = registers.carryFlag ? 1 : 0
+            
+            let result = Int(a) - Int(value) - Int(carryValue)
+            
+            registers.zeroFlag = (UInt8(truncatingIfNeeded: result) == 0)
+            registers.subtractFlag = true
+            
+            let halfCarryResult = Int(a & 0x0F) - Int(value & 0x0F) - Int(carryValue)
+            registers.halfCarryFlag = halfCarryResult < 0
+            
+            registers.carryFlag = result < 0
+            
+            registers.a = UInt8(truncatingIfNeeded: result)
+        }
     func shiftRightLogical(value: UInt8) -> UInt8 {
         
         let bitQueCaiu = (value & 0x01) == 0x01
