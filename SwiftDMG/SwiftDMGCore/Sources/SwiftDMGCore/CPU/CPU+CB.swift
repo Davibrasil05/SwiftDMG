@@ -17,6 +17,11 @@ extension CPU {
         case 0x1A:
             registers.d = rotateRightThroughCarry(value: registers.d)
             return 2
+        
+        case 0x37:
+            // SWAP A
+            registers.a = swapNibbles(value: registers.a)
+            return 2
         case 0x38:
             registers.b = shiftRightLogical(value: registers.b)
             return 2

@@ -65,10 +65,12 @@ public struct Registers {
     }
     
     public var af: UInt16 {
-        get { return (UInt16(a) << 8) | UInt16(f) }
+        get {
+            return (UInt16(a) << 8) | UInt16(f)
+        }
         set {
             a = UInt8(newValue >> 8)
-            f = UInt8(truncatingIfNeeded: newValue) & 0xF0
+            f = UInt8(newValue & 0x00F0)
         }
     }
     

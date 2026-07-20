@@ -25,6 +25,10 @@ extension CPU {
             
             return 2
             
+        case 0x04:
+            // INC B
+            registers.b = increment8bit(value: registers.b)
+            return 1
         case 0x05:
             // DEC B
             registers.b = decrement8bit(value: registers.b)
@@ -36,6 +40,12 @@ extension CPU {
             registers.b = value
             
             return 2
+            
+        case 0x0C:
+            // INC C
+            registers.c = increment8bit(value: registers.c)
+            return 1
+            
         case 0x0D:
             // DEC C
             registers.c = decrement8bit(value: registers.c)
@@ -85,6 +95,10 @@ extension CPU {
             registers.e = increment8bit(value: registers.e)
             return 1
             
+        case 0x1D:
+            // DEC E
+            registers.e = decrement8bit(value: registers.e)
+            return 1
         case 0x1F:
             // RRA (Rotate Right A Through Carry - Fast)
             
@@ -124,6 +138,11 @@ extension CPU {
             
             return 2
             
+        case 0x27:
+            // DAA
+            decimalAdjustAccumulator()
+            return 1
+            
         case 0x31:
             // LD SP, u16
             
@@ -149,6 +168,12 @@ extension CPU {
         case 0x28:
             // JR Z, i8
             return jumpRelative(condition: registers.zeroFlag)
+            
+        case 0x29:
+            // ADD HL, HL
+            add16(value: registers.hl)
+            return 2 // Essa instrução gasta 2 ciclos!
+            
         case 0x2A:
             // LD A,(HL+)
             
@@ -177,6 +202,11 @@ extension CPU {
             
             return 2
             
+        case 0x2F:
+            //CPL
+            complementAccumulator()
+            return 1
+            
         case 0x30:
             // JR NC,i8
             return jumpRelative(condition: !registers.carryFlag)
@@ -202,6 +232,13 @@ extension CPU {
             
             return 3
             
+        case 0x38:
+            // JR C,i8
+            return jumpRelative(condition: registers.carryFlag)
+        case 0x3C:
+            // INC A
+            registers.a = increment8bit(value: registers.a)
+            return 1
             
         case 0x3D:
             // DEC A
@@ -234,6 +271,17 @@ extension CPU {
             registers.d = bus.read(address: registers.hl)
             
             return 2
+            
+        case 0x5F:
+            // LD E,A
+            registers.e = registers.a
+            return 1
+            
+            
+        case 0x67:
+            // LD H,A
+            registers.h = registers.a
+            return 1
             
         case 0x6E:
             
@@ -270,13 +318,38 @@ extension CPU {
             registers.a = registers.b
             return 1
             
+        case 0x79:
+            // LD A,C
+            registers.a = registers.c
+            return 1
+            
+        case 0x7B:
+            // LD A,E
+            registers.a = registers.e
+            return 1
+            
         case 0x7C:
             // LD A, H
             registers.a = registers.h
             return 1
+            
         case 0x7D:
             // LD A, L
             registers.a = registers.l
+            return 1
+            
+        case 0x7E:
+            // LD A,(HL)
+            registers.a = bus.read(address: registers.hl)
+            return 2
+            
+        case 0x97:
+            // SUB A, A
+            subtract(value: registers.a)
+            return 1
+        case 0x9F:
+            // SBC A, A
+            subtractWithCarry(value: registers.a)
             return 1
             
         case 0xA9:
@@ -302,14 +375,22 @@ extension CPU {
             // OR A,A
             logicalOr(value: registers.a)
             return 1
+            
+        case 0xBB:
+            // CP A,E
+            compare(value: registers.e)
+            return 1
         case 0xC1:
             // POP BC
             registers.bc = pop16()
             return 3
+            
+        case 0xC2:
+            // JP NZ,u16
+            return jumpAbsolute(condition: !registers.zeroFlag)
         case 0xC3:
             // JP a16
-            registers.pc = fetch16()
-            return 4
+            return jumpAbsolute(condition: true)
             
         case 0xC4:
             // CALL NZ, a16
@@ -372,6 +453,15 @@ extension CPU {
             
             return 2
             
+        case 0xD8:
+            // RET C
+            return returnSubroutine(condition: registers.carryFlag)
+            
+        case 0xDE:
+            // SBC A, d8
+            let value = fetch()
+            subtractWithCarry(value: value)
+            return 2
         case 0xE0:
             // LD (0xFF00 + u8), A)
             
@@ -395,9 +485,14 @@ extension CPU {
             let value = fetch()
             logicalAnd(value: value)
             return 2
+            
+        case 0xE9:
+            // JP HL
+            registers.pc = registers.hl
+            return 1
+            
         case 0xEA:
             // LD (u16),A
-            
             let destinationAddress = fetch16()
             bus.write(address: destinationAddress, value: registers.a)
             return 4
