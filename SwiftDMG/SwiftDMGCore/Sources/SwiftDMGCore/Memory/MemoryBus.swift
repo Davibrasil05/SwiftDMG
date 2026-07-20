@@ -17,6 +17,24 @@ public class MemoryBus: Addressable{
     
     private var interruptEnable: UInt8 = 0
     
+    public var vram = [UInt8](repeating: 0, count: 8192) // 0x8000 - 0x9FFF
+    
+    public var oam  = [UInt8](repeating: 0, count: 160)  // 0xFE00 - 0xFE9F
+    
+    // --- Registradores da PPU ---
+    public var lcdc: UInt8 = 0x91 // 0xFF40 - LCD Control
+    public var stat: UInt8 = 0x85 // 0xFF41 - LCD Status
+    public var scy:  UInt8 = 0x00 // 0xFF42 - Scroll Y
+    public var scx:  UInt8 = 0x00 // 0xFF43 - Scroll X
+    public var ly:   UInt8 = 0x00 // 0xFF44 - Current Y Line (Somente Leitura)
+    public var lyc:  UInt8 = 0x00 // 0xFF45 - Y Compare
+    public var dma:  UInt8 = 0xFF // 0xFF46 - DMA Transfer
+    public var bgp:  UInt8 = 0xFC // 0xFF47 - Background Palette
+    public var obp0: UInt8 = 0xFF // 0xFF48 - Object Palette 0
+    public var obp1: UInt8 = 0xFF // 0xFF49 - Object Palette 1
+    public var wy:   UInt8 = 0x00 // 0xFF4A - Window Y
+    public var wx:   UInt8 = 0x00 // 0xFF4B - Window X
+    
     
     public init(){}
     
@@ -28,7 +46,7 @@ public class MemoryBus: Addressable{
             
         case 0x8000...0x9FFF:
             //Vram
-            return 0xFF
+            return vram[Int(address - 0x8000)]
             
             
         case 0xA000...0xBFFF:
@@ -48,7 +66,7 @@ public class MemoryBus: Addressable{
         case 0xFE00...0xFE9F:
             // OAM (Sprites)
             
-            return 0xFF
+            return oam[Int(address - 0xFE00)]
             
         case 0xFF80...0xFFFE:
             //hram
@@ -57,6 +75,18 @@ public class MemoryBus: Addressable{
         case 0xFFFF:
             return interruptEnable
             
+        case 0xFF40: return lcdc
+        case 0xFF41: return stat
+        case 0xFF42: return scy
+        case 0xFF43: return scx
+        case 0xFF44: return ly
+        case 0xFF45: return lyc
+        case 0xFF46: return dma
+        case 0xFF47: return bgp
+        case 0xFF48: return obp0
+        case 0xFF49: return obp1
+        case 0xFF4A: return wy
+        case 0xFF4B: return wx
             
         default:
             return 0xFF
@@ -72,7 +102,7 @@ public class MemoryBus: Addressable{
             
         case 0x8000...0x9FFF:
             //vram
-            break
+            vram[Int(address - 0x8000)] = value
             
             
         case 0xA000...0xBFFF:
@@ -95,15 +125,15 @@ public class MemoryBus: Addressable{
         case 0xFE00...0xFE9F:
             // OAM (Sprites)
             
-            break
+            oam[Int(address - 0xFE00)] = value
             
         case 0xFEA0...0xFEFF:
             // Espaço vazio / Não utilizável
             break
             
-        case 0xFF00...0xFF7F:
-            // I/O
-            break
+//        case 0xFF00...0xFF7F:
+//            // I/O
+//            break
             
         case 0xFF80...0xFFFE:
             //hram
@@ -111,6 +141,20 @@ public class MemoryBus: Addressable{
             
         case 0xFFFF:
             interruptEnable = value
+            
+            
+        case 0xFF40: lcdc = value
+        case 0xFF41: stat = value
+        case 0xFF42: scy = value
+        case 0xFF43: scx = value
+        case 0xFF44: break // LY é Read Only
+        case 0xFF45: lyc = value
+        case 0xFF46: dma = value
+        case 0xFF47: bgp = value
+        case 0xFF48: obp0 = value
+        case 0xFF49: obp1 = value
+        case 0xFF4A: wy = value
+        case 0xFF4B: wx = value
             
             
         default:

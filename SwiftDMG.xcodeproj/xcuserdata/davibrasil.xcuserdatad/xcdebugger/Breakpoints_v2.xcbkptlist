@@ -14,8 +14,8 @@
             filePath = "SwiftDMG/SwiftDMGCore/Sources/SwiftDMGCore/Memory/MemoryBus.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "25"
-            endingLineNumber = "25"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
             landmarkName = "read(address:)"
             landmarkType = "7">
          </BreakpointContent>
