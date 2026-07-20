@@ -8,13 +8,15 @@
 import Foundation
 
 public class MemoryBus: Addressable{
+    
+    public var cartridge: Cartridge?
+    
     private var wram = [UInt8](repeating: 0, count: 8192) //array de 8 bits para a memória de workram
     
     private var hram = [UInt8](repeating: 0, count:127)
     
     private var interruptEnable: UInt8 = 0
     
-    private var rom = [UInt8](repeating: 0, count: 32768)
     
     public init(){}
     
@@ -22,7 +24,7 @@ public class MemoryBus: Addressable{
         switch address {
         case 0x0000...0x7FFF:
             //rom do cartucho
-            return rom[Int(address)]
+            return cartridge?.read(address: address) ?? 0xFF
             
         case 0x8000...0x9FFF:
             //Vram
@@ -121,11 +123,4 @@ public class MemoryBus: Addressable{
         
     }
     
-    public func load(cartdrigeData: [UInt8]){
-        for(index, byte) in cartdrigeData.enumerated() {
-            if index < rom.count {
-                rom[index] = byte
-            }
-        }
-    }
 }
