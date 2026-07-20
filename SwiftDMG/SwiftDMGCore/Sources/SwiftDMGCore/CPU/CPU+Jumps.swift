@@ -22,6 +22,17 @@ extension CPU {
             return 2
         }
     }
+    func jumpAbsolute(condition: Bool) -> Int {
+
+            let destinationAddress = fetch16()
+            
+            if condition {
+                registers.pc = destinationAddress
+                return 4
+            } else {
+                return 3
+            }
+        }
     
     func callSubroutine(condition: Bool) -> Int {
         let destinationAddress = fetch16()
@@ -35,9 +46,13 @@ extension CPU {
         }
     }
     
-    func returnSubroutine() -> Int {
-
-        registers.pc = pop16()
-        return 4
+    func returnSubroutine(condition: Bool) -> Int {
+        if condition {
+            registers.pc = pop16()
+            
+            return 5
+        } else {
+            return 2
+        }
     }
 }

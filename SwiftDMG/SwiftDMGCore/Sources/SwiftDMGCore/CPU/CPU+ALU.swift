@@ -80,6 +80,37 @@ extension CPU {
         
         registers.carryFlag = result > 0xFF
     }
+    func addWithCarry(value: UInt8) {
+        let a = registers.a
+        
+        let carryValue: UInt8 = registers.carryFlag ? 1 : 0
+        
+        let result = Int(a) + Int(value) + Int(carryValue)
+        
+        let finalA = UInt8(truncatingIfNeeded: result)
+        registers.zeroFlag = (finalA == 0)
+        
+        registers.subtractFlag = false
+        
+        registers.halfCarryFlag = (a & 0x0F) + (value & 0x0F) + carryValue > 0x0F
+        
+        registers.carryFlag = result > 0xFF
+        
+        registers.a = finalA
+    }
+    func add16(value: UInt16) {
+        let hl = registers.hl
+        
+        let result = Int(hl) + Int(value)
+        
+        registers.subtractFlag = false
+        
+        registers.halfCarryFlag = (hl & 0x0FFF) + (value & 0x0FFF) > 0x0FFF
+        
+        registers.carryFlag = result > 0xFFFF
+        
+        registers.hl = UInt16(truncatingIfNeeded: result)
+    }
     func subtract(value: UInt8) {
         let a = registers.a
         
@@ -93,6 +124,22 @@ extension CPU {
         
         registers.a = a &- value
     }
+    func subtractWithCarry(value: UInt8) {
+            let a = registers.a
+            let carryValue: UInt8 = registers.carryFlag ? 1 : 0
+            
+            let result = Int(a) - Int(value) - Int(carryValue)
+            
+            registers.zeroFlag = (UInt8(truncatingIfNeeded: result) == 0)
+            registers.subtractFlag = true
+            
+            let halfCarryResult = Int(a & 0x0F) - Int(value & 0x0F) - Int(carryValue)
+            registers.halfCarryFlag = halfCarryResult < 0
+            
+            registers.carryFlag = result < 0
+            
+            registers.a = UInt8(truncatingIfNeeded: result)
+        }
     func shiftRightLogical(value: UInt8) -> UInt8 {
         
         let bitQueCaiu = (value & 0x01) == 0x01
@@ -119,6 +166,51 @@ extension CPU {
         registers.halfCarryFlag = false
         
         registers.carryFlag = bitQueVaiSair
+        
+        return newValue
+    }
+    func decimalAdjustAccumulator() {
+        
+        var a = Int(registers.a)
+        
+        if !registers.subtractFlag {
+            
+            if registers.halfCarryFlag || (a & 0x0F) > 0x09 {
+                a += 0x06
+            }
+            if registers.carryFlag || a > 0x9F {
+                a += 0x60
+                registers.carryFlag = true
+            }
+        } else {
+            
+            if registers.halfCarryFlag {
+                a = (a - 0x06) & 0xFF
+            }
+            if registers.carryFlag {
+                a -= 0x60
+            }
+        }
+        
+        registers.halfCarryFlag = false
+        
+        registers.a = UInt8(a & 0xFF)
+        registers.zeroFlag = (registers.a == 0)
+    }
+    func complementAccumulator() {
+        registers.a = ~registers.a
+        
+        registers.subtractFlag = true
+        registers.halfCarryFlag = true
+    }
+    func swapNibbles(value: UInt8) -> UInt8 {
+        
+        let newValue = (value >> 4) | (value << 4)
+        
+        registers.zeroFlag = (newValue == 0)
+        registers.subtractFlag = false
+        registers.halfCarryFlag = false
+        registers.carryFlag = false
         
         return newValue
     }
